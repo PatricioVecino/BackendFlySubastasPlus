@@ -1,0 +1,266 @@
+[
+  {
+    "tag": "Auth",
+    "method": "POST",
+    "path": "/auth/login",
+    "summary": "Iniciar sesión"
+  },
+  {
+    "tag": "Auth",
+    "method": "POST",
+    "path": "/auth/logout",
+    "summary": "Cerrar sesión"
+  },
+  {
+    "tag": "Auth",
+    "method": "POST",
+    "path": "/auth/refresh",
+    "summary": "Refrescar token"
+  },
+  {
+    "tag": "Auth",
+    "method": "POST",
+    "path": "/auth/recuperar-clave",
+    "summary": "Solicitar código de recuperación"
+  },
+  {
+    "tag": "Auth",
+    "method": "POST",
+    "path": "/auth/verificar-codigo",
+    "summary": "Verificar código de recuperación"
+  },
+  {
+    "tag": "Auth",
+    "method": "POST",
+    "path": "/auth/nueva-clave",
+    "summary": "Establecer nueva clave"
+  },
+  {
+    "tag": "Registro",
+    "method": "POST",
+    "path": "/registro/etapa1",
+    "summary": "'Registro Etapa 1: datos personales + email + fotos DNI'"
+  },
+  {
+    "tag": "Registro",
+    "method": "POST",
+    "path": "/registro/etapa2",
+    "summary": "'Registro Etapa 2: confirmar email y crear clave'"
+  },
+  {
+    "tag": "Registro",
+    "method": "POST",
+    "path": "/registro/verificar-token",
+    "summary": "Verificar estado del token de seguimiento"
+  },
+  {
+    "tag": "Perfil",
+    "method": "GET",
+    "path": "/perfil",
+    "summary": "Obtener mi perfil"
+  },
+  {
+    "tag": "Medios de Pago",
+    "method": "GET",
+    "path": "/medios-pago",
+    "summary": "Listar mis medios de pago"
+  },
+  {
+    "tag": "Medios de Pago",
+    "method": "POST",
+    "path": "/medios-pago/cuenta-nacional",
+    "summary": "Agregar cuenta bancaria nacional"
+  },
+  {
+    "tag": "Medios de Pago",
+    "method": "POST",
+    "path": "/medios-pago/cuenta-exterior",
+    "summary": "Agregar cuenta bancaria exterior"
+  },
+  {
+    "tag": "Medios de Pago",
+    "method": "POST",
+    "path": "/medios-pago/tarjeta",
+    "summary": "Agregar tarjeta de crédito"
+  },
+  {
+    "tag": "Medios de Pago",
+    "method": "POST",
+    "path": "/medios-pago/cheque",
+    "summary": "Agregar cheque certificado"
+  },
+  {
+    "tag": "Medios de Pago",
+    "method": "GET",
+    "path": "/medios-pago/{id}",
+    "summary": "Ver detalle de un medio de pago"
+  },
+  {
+    "tag": "Medios de Pago",
+    "method": "DELETE",
+    "path": "/medios-pago/{id}",
+    "summary": "Eliminar un medio de pago"
+  },
+  {
+    "tag": "Subastas",
+    "method": "GET",
+    "path": "/subastas",
+    "summary": "Listar subastas"
+  },
+  {
+    "tag": "Subastas",
+    "method": "GET",
+    "path": "/subastas/{id}",
+    "summary": "Ver detalle de subasta"
+  },
+  {
+    "tag": "Subastas",
+    "method": "GET",
+    "path": "/subastas/{id}/catalogo",
+    "summary": "Ver catálogo de piezas de una subasta"
+  },
+  {
+    "tag": "Subastas",
+    "method": "GET",
+    "path": "/piezas/{id}",
+    "summary": "Ver detalle de una pieza"
+  },
+  {
+    "tag": "Sala en Vivo",
+    "method": "GET",
+    "path": "/subastas/{id}/sala",
+    "summary": "Ingresar a la sala en vivo"
+  },
+  {
+    "tag": "Sala en Vivo",
+    "method": "POST",
+    "path": "/subastas/{id}/pujas",
+    "summary": "Realizar una puja"
+  },
+  {
+    "tag": "Sala en Vivo",
+    "method": "POST",
+    "path": "/subastas/{id}/sala/salir",
+    "summary": "Salir de la sala en vivo"
+  },
+  {
+    "tag": "Compra",
+    "method": "GET",
+    "path": "/compras",
+    "summary": "Listar mis compras"
+  },
+  {
+    "tag": "Compra",
+    "method": "GET",
+    "path": "/compras/{id}",
+    "summary": "Ver detalle / factura de compra"
+  },
+  {
+    "tag": "Compra",
+    "method": "POST",
+    "path": "/compras/{id}/pagar",
+    "summary": "Seleccionar medio de pago y método de entrega"
+  },
+  {
+    "tag": "Multas",
+    "method": "GET",
+    "path": "/multas",
+    "summary": "Ver multas activas"
+  },
+  {
+    "tag": "Multas",
+    "method": "POST",
+    "path": "/multas/{id}/pagar",
+    "summary": "Pagar una multa"
+  },
+  {
+    "tag": "Vender",
+    "method": "GET",
+    "path": "/solicitudes-venta",
+    "summary": "Listar mis solicitudes de venta"
+  },
+  {
+    "tag": "Vender",
+    "method": "POST",
+    "path": "/solicitudes-venta",
+    "summary": "Crear solicitud de venta"
+  },
+  {
+    "tag": "Vender",
+    "method": "GET",
+    "path": "/solicitudes-venta/{id}",
+    "summary": "Ver detalle de solicitud"
+  },
+  {
+    "tag": "Vender",
+    "method": "POST",
+    "path": "/solicitudes-venta/{id}/aceptar-condiciones",
+    "summary": "Aceptar o rechazar condiciones de venta"
+  },
+  {
+    "tag": "Vender",
+    "method": "GET",
+    "path": "/solicitudes-venta/{id}/poliza",
+    "summary": "Ver póliza de seguro del bien"
+  },
+  {
+    "tag": "Vender",
+    "method": "GET",
+    "path": "/solicitudes-venta/{id}/contactar-aseguradora",
+    "summary": "Obtener datos de contacto de la aseguradora"
+  },
+  {
+    "tag": "Notificaciones",
+    "method": "GET",
+    "path": "/notificaciones",
+    "summary": "Listar notificaciones"
+  },
+  {
+    "tag": "Notificaciones",
+    "method": "GET",
+    "path": "/notificaciones/{id}",
+    "summary": "Ver detalle de notificación"
+  },
+  {
+    "tag": "Notificaciones",
+    "method": "GET",
+    "path": "/notificaciones/{id}/mensajes",
+    "summary": "Listar mensajes de una notificación"
+  },
+  {
+    "tag": "Notificaciones",
+    "method": "POST",
+    "path": "/notificaciones/{id}/mensajes",
+    "summary": "Enviar mensaje en un hilo de notificación"
+  },
+  {
+    "tag": "Historial",
+    "method": "GET",
+    "path": "/historial/participaciones",
+    "summary": "Historial de participaciones en subastas"
+  },
+  {
+    "tag": "Historial",
+    "method": "GET",
+    "path": "/historial/participaciones/{id}",
+    "summary": "Detalle de una participación"
+  },
+  {
+    "tag": "Historial",
+    "method": "GET",
+    "path": "/historial/participaciones/{id}/pujas",
+    "summary": "Historial de pujas en una participación"
+  },
+  {
+    "tag": "Historial",
+    "method": "GET",
+    "path": "/historial/ventas",
+    "summary": "Historial de ventas (bienes que vendí)"
+  },
+  {
+    "tag": "Historial",
+    "method": "GET",
+    "path": "/historial/metricas",
+    "summary": "Métricas generales del usuario"
+  }
+]

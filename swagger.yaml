@@ -1,0 +1,3045 @@
+openapi: 3.0.0
+info:
+  title: SubastaPlus API
+  description: |
+    API REST para la aplicación móvil SubastaPlus - Sistema de Subastas.
+    Trabajo Práctico Obligatorio - Desarrollo de Aplicaciones I - 1C2026.
+
+
+
+    ## Roles
+    - **invitado**: usuario no autenticado, acceso limitado a catálogos públicos (sin precios base)
+    - **postor**: usuario registrado y aprobado, puede pujar según su categoría
+  version: 1.0.0
+  contact:
+    name: Equipo SubastaPlus
+servers:
+  - description: SwaggerHub API Auto Mocking
+    url: 'https://virtserver.swaggerhub.com/uade-05d/TPO-DesarrolloDeAps/1.0.0'
+  - url: 'https://api.subastaplus.com/v1'
+    description: Producción
+  - url: 'http://localhost:3000/v1'
+    description: Desarrollo local
+tags:
+  - name: Auth
+    description: 'Pantallas: 2. Onboarding, 3. Login, 4-6. Recuperar clave'
+  - name: Registro
+    description: 'Pantallas: 7. Registro E1, 8-9. Foto DNI, 11. Esperando aprobación, 12. Registro E2, 14. Medio de pago, 15. Registro completo'
+  - name: Subastas
+    description: 'Pantallas: 16. Home, 25. Listado subastas, 27. Detalle subasta, 28. Catálogo piezas, 21. Detalle pieza, 23. Info artista'
+  - name: Sala en Vivo
+    description: 'Pantallas: 29. Pre-ingreso, 30. Sala en vivo, 32-35. Flujo de puja'
+  - name: Compra
+    description: 'Pantallas: 36. Ganador, 38. Sel. medio pago, 39. Factura, 40. Envío o retiro, 41. Compra exitosa'
+  - name: Multas
+    description: 'Pantallas: INSUF. Fondos insuficientes, 84. Multa activa, 85. Detalle multa, 86. Pagar multa, 87. Confirm pago, 88. Bloqueado judicial'
+  - name: Vender
+    description: 'Pantallas: 42-48. Solicitud de venta, 49-53. Resultado revisión, 54-60. Bien en subasta/vendido'
+  - name: Perfil
+    description: 'Pantallas: 61. Mi perfil, 62. Editar perfil, 63. Mi categoría, 64. Estado cuenta'
+  - name: Medios de Pago
+    description: 'Pantallas: 65. Medios de pago, 66. Agregar cta nac, 67. Agregar cta ext, 66b. Agregar tarjeta, 70. Agregar cheque, 71. Detalle medio pago'
+  - name: Historial
+    description: 'Pantallas: 74-76. Participaciones y pujas, 77. Métricas, 80-81. Compras, 82. Ventas'
+  - name: Notificaciones
+    description: 'Pantallas: 17. Notificaciones, 18. Detalle notificación'
+security:
+  - bearerAuth: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: juan@mail.com
+        password:
+          type: string
+          format: password
+          example: MiClave123!
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIs...
+        refreshToken:
+          type: string
+        usuario:
+          $ref: '#/components/schemas/UsuarioResumen'
+    RecuperarClaveRequest:
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+          format: email
+    VerificarCodigoRequest:
+      type: object
+      required:
+        - email
+        - codigo
+      properties:
+        email:
+          type: string
+          format: email
+        codigo:
+          type: string
+          example: '482915'
+    NuevaClaveRequest:
+      type: object
+      required:
+        - email
+        - nuevaClave
+      properties:
+        email:
+          type: string
+          format: email
+        nuevaClave:
+          type: string
+          format: password
+    RegistroEtapa1Request:
+      type: object
+      required:
+        - nombre
+        - apellido
+        - email
+        - domicilioLegal
+        - paisOrigen
+        - dniFrente
+        - dniDorso
+      properties:
+        nombre:
+          type: string
+          example: Juan
+        apellido:
+          type: string
+          example: Pérez
+        email:
+          type: string
+          format: email
+          example: juan@mail.com
+        domicilioLegal:
+          type: string
+          example: 'Av. Corrientes 1234, CABA'
+        paisOrigen:
+          type: string
+          example: Argentina
+        dniFrente:
+          type: string
+          format: binary
+          description: Imagen del frente del documento (varbinary)
+        dniDorso:
+          type: string
+          format: binary
+          description: Imagen del dorso del documento (varbinary)
+    RegistroEtapa2Request:
+      type: object
+      required:
+        - tokenSeguimiento
+        - email
+        - clave
+      properties:
+        tokenSeguimiento:
+          type: string
+          description: Token guardado en SharedPreferences/DataStore durante la etapa 1
+          example: tok_abc123xyz789
+        email:
+          type: string
+          format: email
+          description: Debe coincidir con el email usado en la etapa 1
+        clave:
+          type: string
+          format: password
+    UsuarioResumen:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        nombre:
+          type: string
+        apellido:
+          type: string
+        email:
+          type: string
+        categoria:
+          $ref: '#/components/schemas/CategoriaUsuario'
+        estado:
+          type: string
+          enum:
+            - pendiente_aprobacion
+            - aprobado
+            - bloqueado_multa
+            - bloqueado_judicial
+        cantidadMediosPago:
+          type: integer
+    UsuarioDetalle:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        nombre:
+          type: string
+        apellido:
+          type: string
+        email:
+          type: string
+        domicilioLegal:
+          type: string
+        paisOrigen:
+          type: string
+        categoria:
+          $ref: '#/components/schemas/CategoriaUsuario'
+        estado:
+          type: string
+          enum:
+            - pendiente_aprobacion
+            - aprobado
+            - bloqueado_multa
+            - bloqueado_judicial
+        fotoPerfil:
+          type: string
+          format: uri
+          nullable: true
+        fechaRegistro:
+          type: string
+          format: date-time
+    CategoriaUsuario:
+      type: string
+      enum:
+        - comun
+        - especial
+        - plata
+        - oro
+        - platino
+    EditarPerfilRequest:
+      type: object
+      properties:
+        nombre:
+          type: string
+        apellido:
+          type: string
+        domicilioLegal:
+          type: string
+        fotoPerfil:
+          type: string
+          format: binary
+    MedioPago:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        tipo:
+          type: string
+          enum:
+            - cuenta_nacional
+            - cuenta_exterior
+            - tarjeta_credito
+            - cheque_certificado
+        alias:
+          type: string
+          example: Banco Nación - CA $
+        verificado:
+          type: boolean
+        moneda:
+          type: string
+          enum:
+            - ARS
+            - USD
+        ultimosDigitos:
+          type: string
+          example: '4532'
+          nullable: true
+        montoCheque:
+          type: number
+          nullable: true
+          description: 'Solo para cheques certificados, monto del cheque'
+    CrearCuentaNacionalRequest:
+      type: object
+      required:
+        - banco
+        - cbu
+        - cuitCuil
+        - tipoCuenta
+        - titular
+      properties:
+        banco:
+          type: string
+          example: Banco Nación
+        cbu:
+          type: string
+          example: '0110012340012345678901'
+        cuitCuil:
+          type: string
+          example: 20-12345678-9
+        tipoCuenta:
+          type: string
+          enum:
+            - caja_ahorro
+            - cuenta_corriente
+          example: caja_ahorro
+        titular:
+          type: string
+        alias:
+          type: string
+    CrearCuentaExteriorRequest:
+      type: object
+      required:
+        - banco
+        - swift
+        - iban
+        - pais
+        - titular
+        - moneda
+      properties:
+        banco:
+          type: string
+        swift:
+          type: string
+        iban:
+          type: string
+        pais:
+          type: string
+        titular:
+          type: string
+        moneda:
+          type: string
+          enum:
+            - USD
+            - EUR
+            - GBP
+    CrearTarjetaRequest:
+      type: object
+      required:
+        - numero
+        - titular
+        - vencimiento
+        - codigoSeguridad
+      properties:
+        numero:
+          type: string
+          example: '4111111111111111'
+        titular:
+          type: string
+        vencimiento:
+          type: string
+          example: 12/28
+        codigoSeguridad:
+          type: string
+    CrearChequeRequest:
+      type: object
+      required:
+        - banco
+        - numeroCheque
+        - monto
+        - moneda
+        - fechaEmision
+      properties:
+        banco:
+          type: string
+        numeroCheque:
+          type: string
+        monto:
+          type: number
+          example: 50000
+        moneda:
+          type: string
+          enum:
+            - ARS
+            - USD
+        fechaEmision:
+          type: string
+          format: date
+          example: '2026-04-01'
+          description: Fecha de emisión del cheque certificado
+    SubastaResumen:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        titulo:
+          type: string
+          example: 'Arte Moderno #47'
+        categoria:
+          $ref: '#/components/schemas/CategoriaUsuario'
+        fecha:
+          type: string
+          format: date-time
+        moneda:
+          type: string
+          enum:
+            - ARS
+            - USD
+        estado:
+          type: string
+          enum:
+            - programada
+            - en_vivo
+            - finalizada
+        cantidadPiezas:
+          type: integer
+          example: 12
+        rematador:
+          type: string
+        esColeccion:
+          type: boolean
+        nombreColeccion:
+          type: string
+          nullable: true
+    SubastaDetalle:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        titulo:
+          type: string
+        categoria:
+          $ref: '#/components/schemas/CategoriaUsuario'
+        fecha:
+          type: string
+          format: date-time
+        moneda:
+          type: string
+          enum:
+            - ARS
+            - USD
+        estado:
+          type: string
+          enum:
+            - programada
+            - en_vivo
+            - finalizada
+        ubicacion:
+          type: string
+        rematador:
+          type: string
+        cantidadPiezas:
+          type: integer
+        esColeccion:
+          type: boolean
+        nombreColeccion:
+          type: string
+          nullable: true
+        puedeEntrar:
+          type: boolean
+          description: Indica si el usuario tiene categoría y medio de pago para participar
+        razonNoEntrar:
+          type: string
+          nullable: true
+          description: 'Motivo por el cual no puede entrar (ej: categoría insuficiente, sin medio de pago)'
+    PiezaResumen:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        numeroItem:
+          type: integer
+          example: 47
+        descripcion:
+          type: string
+          example: Naturaleza Muerta - Óleo sobre lienzo
+        imagenPrincipal:
+          type: string
+          format: uri
+        precioBase:
+          type: number
+          nullable: true
+          description: null si el usuario no está registrado
+        estado:
+          type: string
+          enum:
+            - pendiente
+            - en_subasta
+            - vendida
+        cantidadElementos:
+          type: integer
+          description: 'Cantidad de elementos que componen la pieza (ej: Juego de Té = 18)'
+          example: 1
+    PiezaDetalle:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        numeroItem:
+          type: integer
+        descripcion:
+          type: string
+        precioBase:
+          type: number
+          nullable: true
+        imagenes:
+          type: array
+          items:
+            type: string
+            format: uri
+          minItems: 6
+        cantidadElementos:
+          type: integer
+        duenioActual:
+          type: string
+        esObraDeArte:
+          type: boolean
+        artista:
+          $ref: '#/components/schemas/Artista'
+        subastaAsignada:
+          $ref: '#/components/schemas/SubastaAsignadaPieza'
+        estado:
+          type: string
+          enum:
+            - pendiente
+            - en_subasta
+            - vendida
+    Artista:
+      type: object
+      nullable: true
+      properties:
+        nombre:
+          type: string
+          example: Pablo Picasso
+        fecha:
+          type: string
+          example: '1937'
+        historia:
+          type: string
+          description: 'Contexto, dueños anteriores, curiosidades'
+    SubastaAsignadaPieza:
+      type: object
+      nullable: true
+      description: Información de la subasta a la que está asignada la pieza (fecha, rematador y dirección)
+      properties:
+        subastaId:
+          type: string
+          format: uuid
+        titulo:
+          type: string
+          example: 'Arte Moderno #47'
+        fecha:
+          type: string
+          format: date-time
+          description: Fecha y hora programada de la subasta
+        rematador:
+          type: string
+          example: Dr. Roberto García
+        ubicacion:
+          type: string
+          description: Dirección donde se realiza la subasta
+          example: 'Av. del Libertador 4200, CABA'
+    SalaEnVivo:
+      type: object
+      properties:
+        subastaId:
+          type: string
+          format: uuid
+        piezaActual:
+          $ref: '#/components/schemas/PiezaEnVivo'
+        streamingUrl:
+          type: string
+          format: uri
+          description: URL del servicio de streaming (externo)
+        conectados:
+          type: integer
+    PiezaEnVivo:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        numeroItem:
+          type: integer
+        descripcion:
+          type: string
+        imagenPrincipal:
+          type: string
+          format: uri
+          description: URL de la imagen principal de la pieza en subasta
+        precioBase:
+          type: number
+        mejorOferta:
+          type: number
+        pujaMinima:
+          type: number
+          description: Mejor oferta + 1% del valor base
+        pujaMaxima:
+          type: number
+          nullable: true
+          description: Mejor oferta + 20% del valor base. null para categorías oro y platino
+        ultimasPujas:
+          type: array
+          items:
+            $ref: '#/components/schemas/PujaResumen'
+    PujaResumen:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        postorId:
+          type: string
+          description: 'Identificador anonimizado (ej: Postor #142)'
+        monto:
+          type: number
+          example: 52300
+        timestamp:
+          type: string
+          format: date-time
+        esPropia:
+          type: boolean
+    CrearPujaRequest:
+      type: object
+      required:
+        - monto
+      properties:
+        monto:
+          type: number
+          example: 53200
+          description: Debe ser >= pujaMinima y <= pujaMaxima (si aplica)
+    PujaResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        monto:
+          type: number
+        estado:
+          type: string
+          enum:
+            - registrada
+            - superada
+            - ganadora
+        timestamp:
+          type: string
+          format: date-time
+    CompraDetalle:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        piezaId:
+          type: string
+          format: uuid
+        descripcionPieza:
+          type: string
+        montoPujado:
+          type: number
+        comisiones:
+          type: number
+        costoEnvio:
+          type: number
+          nullable: true
+        total:
+          type: number
+        moneda:
+          type: string
+          enum:
+            - ARS
+            - USD
+        medioPagoId:
+          type: string
+          format: uuid
+          nullable: true
+        metodoEntrega:
+          type: string
+          enum:
+            - envio
+            - retiro_personal
+          nullable: true
+        direccionEnvio:
+          type: string
+          nullable: true
+        estado:
+          type: string
+          enum:
+            - pendiente_pago
+            - pagada
+            - fondos_insuficientes
+        avisoSeguro:
+          type: string
+          nullable: true
+          description: Aviso de que al retirar personalmente pierde cobertura de seguro
+    SeleccionarPagoRequest:
+      type: object
+      required:
+        - medioPagoId
+        - metodoEntrega
+      properties:
+        medioPagoId:
+          type: string
+          format: uuid
+        metodoEntrega:
+          type: string
+          enum:
+            - envio
+            - retiro_personal
+        direccionEnvio:
+          type: string
+          nullable: true
+          description: Requerido si metodoEntrega = envio
+    Multa:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        compraId:
+          type: string
+          format: uuid
+        montoOriginal:
+          type: number
+          description: Monto de la oferta ganadora
+        montoMulta:
+          type: number
+          description: 10% del valor ofertado
+        moneda:
+          type: string
+          enum:
+            - ARS
+            - USD
+        estado:
+          type: string
+          enum:
+            - pendiente
+            - pagada
+            - derivada_justicia
+        fechaLimite:
+          type: string
+          format: date-time
+          description: 72hs desde la generación de la multa para presentar fondos
+        fechaCreacion:
+          type: string
+          format: date-time
+    PagarMultaRequest:
+      type: object
+      required:
+        - medioPagoId
+      properties:
+        medioPagoId:
+          type: string
+          format: uuid
+    SolicitudVenta:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        tipo:
+          type: string
+          enum:
+            - arte
+            - antiguedad
+            - joya
+            - vehiculo
+            - mueble
+            - otro
+        descripcion:
+          type: string
+        imagenes:
+          type: array
+          items:
+            type: string
+            format: uri
+          minItems: 6
+        historia:
+          type: string
+          nullable: true
+        declaracionPropiedad:
+          type: boolean
+        estado:
+          type: string
+          enum:
+            - borrador
+            - enviada
+            - en_revision
+            - aceptada
+            - rechazada
+            - en_subasta
+            - vendida
+            - no_vendida
+        motivoRechazo:
+          type: string
+          nullable: true
+        valorBase:
+          type: number
+          nullable: true
+        comisiones:
+          type: number
+          nullable: true
+        subastaAsignada:
+          $ref: '#/components/schemas/SubastaResumen'
+        direccionEnvio:
+          type: string
+          nullable: true
+          description: Dirección a la que el usuario debe enviar el bien
+        ubicacionDeposito:
+          type: string
+          nullable: true
+        polizaSeguro:
+          $ref: '#/components/schemas/PolizaSeguro'
+        cuentaCobro:
+          type: string
+          nullable: true
+          description: Cuenta donde se depositará el dinero de la venta
+        fechaCreacion:
+          type: string
+          format: date-time
+    CrearSolicitudVentaRequest:
+      type: object
+      required:
+        - tipo
+        - descripcion
+        - imagenes
+        - declaracionPropiedad
+      properties:
+        tipo:
+          type: string
+          enum:
+            - arte
+            - antiguedad
+            - joya
+            - vehiculo
+            - mueble
+            - otro
+        descripcion:
+          type: string
+        imagenes:
+          type: array
+          items:
+            type: string
+            format: binary
+          minItems: 6
+          description: Al menos 6 fotos (varbinary)
+        historia:
+          type: string
+          nullable: true
+          description: 'Contexto, dueños anteriores, curiosidades (requerido si tipo = arte)'
+        nombreArtista:
+          type: string
+          nullable: true
+        fechaObra:
+          type: string
+          nullable: true
+        declaracionPropiedad:
+          type: boolean
+          description: El usuario declara que el bien le pertenece y no tiene impedimentos
+    AceptarCondicionesVentaRequest:
+      type: object
+      required:
+        - aceptaValorBase
+        - aceptaComisiones
+        - cuentaCobro
+      properties:
+        aceptaValorBase:
+          type: boolean
+        aceptaComisiones:
+          type: boolean
+        cuentaCobro:
+          $ref: '#/components/schemas/CuentaCobroRequest'
+    CuentaCobroRequest:
+      type: object
+      required:
+        - tipo
+      properties:
+        tipo:
+          type: string
+          enum:
+            - nacional
+            - exterior
+          description: Tipo de cuenta de cobro
+        cbu:
+          type: string
+          nullable: true
+          description: CBU de la cuenta (requerido si tipo = nacional)
+          example: '0000003100010000000012'
+        banco:
+          type: string
+          description: Nombre del banco
+          example: Banco Nacion
+        titular:
+          type: string
+          description: Nombre del titular de la cuenta
+          example: Juan Perez
+        swift:
+          type: string
+          nullable: true
+          description: Código SWIFT (requerido si tipo = exterior)
+        iban:
+          type: string
+          nullable: true
+          description: Código IBAN (requerido si tipo = exterior)
+        pais:
+          type: string
+          nullable: true
+          description: País de la cuenta (requerido si tipo = exterior)
+        moneda:
+          type: string
+          nullable: true
+          enum:
+            - ARS
+            - USD
+            - EUR
+            - GBP
+          description: Moneda de la cuenta (requerido si tipo = exterior)
+    PolizaSeguro:
+      type: object
+      nullable: true
+      properties:
+        id:
+          type: string
+          format: uuid
+        aseguradora:
+          type: string
+        numeroPoliza:
+          type: string
+        valorAsegurado:
+          type: number
+        contactoAseguradora:
+          type: string
+          description: Teléfono o email de la aseguradora
+    ContactoAseguradora:
+      type: object
+      description: Datos de contacto de la aseguradora asociada a la póliza del bien
+      properties:
+        nombre:
+          type: string
+          description: Nombre de la compañía aseguradora
+          example: La Meridional Seguros
+        telefono:
+          type: string
+          description: Teléfono de contacto
+          example: '+54 11 4555-0000'
+        email:
+          type: string
+          format: email
+          description: Email de contacto
+          example: info@meridional.com
+        web:
+          type: string
+          format: uri
+          description: Sitio web de la aseguradora
+          example: www.meridional.com.ar
+        numeroPoliza:
+          type: string
+          description: Número de póliza asociada al bien
+          example: '#SEC-2026-0847'
+    Notificacion:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        titulo:
+          type: string
+        mensaje:
+          type: string
+        tipo:
+          type: string
+          enum:
+            - aprobacion_registro
+            - resultado_subasta
+            - puja_superada
+            - solicitud_venta
+            - multa
+            - pago
+            - general
+        leida:
+          type: boolean
+        fecha:
+          type: string
+          format: date-time
+        accionUrl:
+          type: string
+          nullable: true
+        tieneMensajes:
+          type: boolean
+          description: Indica si esta notificación tiene un hilo de mensajes privados asociado
+    Mensaje:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        notificacionId:
+          type: string
+          format: uuid
+        contenido:
+          type: string
+          example: 'Tu puja de US$ 50.900 en la pieza #047 fue superada. Nueva mejor oferta: US$ 52.300.'
+        emisor:
+          type: string
+          enum:
+            - sistema
+            - usuario
+          description: '''sistema'' = mensaje de SubastaPlus, ''usuario'' = respuesta del usuario'
+        fecha:
+          type: string
+          format: date-time
+    EnviarMensajeRequest:
+      type: object
+      required:
+        - contenido
+      properties:
+        contenido:
+          type: string
+          description: Texto del mensaje del usuario
+          example: Muchas Gracias!
+    Participacion:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        subastaId:
+          type: string
+          format: uuid
+        tituloSubasta:
+          type: string
+        fecha:
+          type: string
+          format: date-time
+        cantidadPujas:
+          type: integer
+        gano:
+          type: boolean
+        montoMaximoPujado:
+          type: number
+    HistorialPuja:
+      type: object
+      properties:
+        numero:
+          type: integer
+        monto:
+          type: number
+        timestamp:
+          type: string
+          format: date-time
+        piezaDescripcion:
+          type: string
+        fueGanadora:
+          type: boolean
+    Metricas:
+      type: object
+      properties:
+        totalSubastasAsistidas:
+          type: integer
+        totalGanadas:
+          type: integer
+        porcentajeVictorias:
+          type: number
+        totalOfertado:
+          type: number
+        totalPagado:
+          type: number
+        categoriaActual:
+          $ref: '#/components/schemas/CategoriaUsuario'
+        participacionesPorCategoria:
+          type: object
+          additionalProperties:
+            type: integer
+        montoPromedioOfertado:
+          type: number
+    PaginationMeta:
+      type: object
+      properties:
+        page:
+          type: integer
+        limit:
+          type: integer
+        total:
+          type: integer
+        totalPages:
+          type: integer
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Código de error interno para identificar el tipo de error
+          example: ERROR_CODE
+        message:
+          type: string
+          description: Mensaje descriptivo del error para mostrar al usuario
+          example: Descripción del error ocurrido.
+        details:
+          type: object
+          nullable: true
+          description: 'Información adicional del error (campos inválidos, valores esperados, etc.)'
+          example: null
+paths:
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Iniciar sesión
+      description: Pantalla 3. Login → Retorna JWT token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login exitoso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Credenciales inválidas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: AUTH_INVALID_CREDENTIALS
+                  message:
+                    type: string
+                    example: El email o la contraseña son incorrectos. Verificá tus datos e intentá nuevamente.
+                  details:
+                    type: object
+                    nullable: true
+                    example: null
+        '403':
+          description: Usuario bloqueado (derivado a justicia)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: AUTH_BLOCKED_MULTA
+                  message:
+                    type: string
+                    example: Tu cuenta está suspendida.
+                  details:
+                    type: object
+                    nullable: true
+                    example:
+                      multaId: a1b2c3d4-5678-90ab-cdef-1234567890ab
+                      monto: 5000
+              examples:
+                multa_pendiente:
+                  summary: Usuario con multa impaga
+                  value:
+                    code: AUTH_BLOCKED_MULTA
+                    message: Tu cuenta está suspendida.
+                bloqueado_judicial:
+                  summary: Usuario derivado a justicia
+                  value:
+                    code: AUTH_BLOCKED_JUDICIAL
+                    message: Tu cuenta fue bloqueada por incumplimiento de pago. El caso fue derivado a la justicia. No podés acceder a ningún servicio de la aplicación.
+                    details: null
+  /auth/logout:
+    post:
+      tags:
+        - Auth
+      summary: Cerrar sesión
+      description: Pantalla 98. Cerrar sesión → Invalida el token
+      responses:
+        '204':
+          description: Sesión cerrada
+        '401':
+          description: Token inválido o expirado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: AUTH_TOKEN_INVALID
+                  message:
+                    type: string
+                    example: Tu sesión expiró o el token es inválido. Iniciá sesión nuevamente.
+                  details:
+                    type: object
+                    nullable: true
+                    example: null
+  /auth/refresh:
+    post:
+      tags:
+        - Auth
+      summary: Refrescar token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - refreshToken
+              properties:
+                refreshToken:
+                  type: string
+      responses:
+        '200':
+          description: Token renovado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Refresh token inválido (→ Pantalla 91. Sesión expirada)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: AUTH_REFRESH_EXPIRED
+                  message:
+                    type: string
+                    example: 'Tu sesión expiró. Por favor, iniciá sesión nuevamente.'
+                  details:
+                    type: object
+                    nullable: true
+                    example: null
+  /auth/recuperar-clave:
+    post:
+      tags:
+        - Auth
+      summary: Solicitar código de recuperación
+      description: Pantalla 4. Recuperar - Email → Envía código por mail
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecuperarClaveRequest'
+      responses:
+        '200':
+          description: Código enviado al email
+        '404':
+          description: Email no registrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: AUTH_EMAIL_NOT_FOUND
+                  message:
+                    type: string
+                    example: No encontramos una cuenta asociada a ese email. Verificá el email ingresado o creá una cuenta nueva.
+                  details:
+                    type: object
+                    nullable: true
+                    example: null
+  /auth/verificar-codigo:
+    post:
+      tags:
+        - Auth
+      summary: Verificar código de recuperación
+      description: Pantalla 5. Recuperar - Código
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerificarCodigoRequest'
+      responses:
+        '200':
+          description: 'Código válido, retorna token temporal para resetear clave'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resetToken:
+                    type: string
+                    description: Token temporal para usar en /auth/nueva-clave
+                    example: rst_abc123xyz789
+        '400':
+          description: Código incorrecto o expirado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: AUTH_CODE_INVALID
+                  message:
+                    type: string
+                    example: El código ingresado es incorrecto o ya expiró. Solicitá un nuevo código de verificación.
+                  details:
+                    type: object
+                    nullable: true
+                    example:
+                      intentosRestantes: 2
+  /auth/nueva-clave:
+    post:
+      tags:
+        - Auth
+      summary: Establecer nueva clave
+      description: Pantalla 6. Nueva clave
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NuevaClaveRequest'
+      responses:
+        '200':
+          description: Clave actualizada
+        '400':
+          description: Token inválido o clave no cumple requisitos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: AUTH_PASSWORD_WEAK
+                  message:
+                    type: string
+                    example: 'La contraseña no cumple con los requisitos mínimos. Debe tener al menos 8 caracteres, una mayúscula, una minúscula y un número.'
+                  details:
+                    type: object
+                    nullable: true
+                    example:
+                      requisitos:
+                        - minimo_8_caracteres
+                        - una_mayuscula
+                        - una_minuscula
+                        - un_numero
+  /registro/etapa1:
+    post:
+      tags:
+        - Registro
+      summary: 'Registro Etapa 1: datos personales + email + fotos DNI'
+      description: Pantallas 7-9. Datos + Email + Foto DNI Frente + Dorso → Queda en estado pendiente_aprobacion (Pantalla 11)
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistroEtapa1Request'
+      responses:
+        '201':
+          description: Registro etapa 1 completado. Pendiente aprobación por la empresa. La app debe guardar el tokenSeguimiento en SharedPreferences/DataStore.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  registroId:
+                    type: string
+                    format: uuid
+                  tokenSeguimiento:
+                    type: string
+                    description: Token para consultar el estado del registro. Guardar en SharedPreferences/DataStore.
+                    example: tok_abc123xyz789
+                  estado:
+                    type: string
+                    example: pendiente_aprobacion
+        '400':
+          description: Datos inválidos o incompletos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: REGISTRO_DATOS_INVALIDOS
+                  message:
+                    type: string
+                    example: Faltan campos obligatorios o los datos ingresados no son válidos.
+                  details:
+                    type: object
+                    nullable: true
+                    example:
+                      camposInvalidos:
+                        - dniFrente
+                        - paisOrigen
+                      errores:
+                        dniFrente: La imagen del frente del documento es obligatoria.
+                        paisOrigen: Seleccioná un país de origen válido.
+        '409':
+          description: Ya existe un registro con ese documento
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: REGISTRO_DUPLICADO
+                  message:
+                    type: string
+                    example: 'Ya existe una cuenta registrada con ese documento. Si olvidaste tu clave, usá la opción ''Recuperar contraseña''.'
+                  details:
+                    type: object
+                    nullable: true
+                    example: null
+  /registro/etapa2:
+    post:
+      tags:
+        - Registro
+      summary: 'Registro Etapa 2: confirmar email y crear clave'
+      description: Pantalla 12. Registro E2 → Completar perfil y generar clave (después de recibir mail de aprobación)
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistroEtapa2Request'
+      responses:
+        '200':
+          description: 'Perfil completado, usuario activo'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: Datos inválidos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: REGISTRO_EMAIL_INVALIDO
+                  message:
+                    type: string
+                    example: El email ingresado no es válido o ya está en uso por otra cuenta.
+                  details:
+                    type: object
+                    nullable: true
+                    example:
+                      campo: email
+        '403':
+          description: Usuario aún no fue aprobado por la empresa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: REGISTRO_NO_APROBADO
+                  message:
+                    type: string
+                    example: Tu solicitud de registro aún está siendo revisada por la empresa. Te enviaremos un email cuando esté aprobada.
+                  details:
+                    type: object
+                    nullable: true
+                    example:
+                      estado: pendiente_aprobacion
+  /registro/verificar-token:
+    post:
+      tags:
+        - Registro
+      summary: Verificar estado del token de seguimiento
+      description: |
+        Se llama cada vez que la app se abre y detecta un tokenSeguimiento guardado en SharedPreferences/DataStore.
+        El backend hashea el token recibido, busca en clientesAcceso por tokenSeguimientoHash y evalúa el estado del cliente:
+        - admitido = 'no' → el registro sigue pendiente de aprobación, entra como invitado.
+        - admitido = 'si' y passwordHash = null → fue aprobado, debe crear su clave (→ Pantalla 12).
+        - admitido = 'si' y passwordHash != null → ya tiene clave, el token ya no es válido.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - tokenSeguimiento
+              properties:
+                tokenSeguimiento:
+                  type: string
+                  description: Token guardado en SharedPreferences/DataStore al registrarse
+                  example: tok_abc123xyz789
+      responses:
+        '200':
+          description: Estado actual del registro
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    enum:
+                      - pendiente_aprobacion
+                      - requiere_clave
+                      - ya_activo
+                    description: |
+                      pendiente_aprobacion = admitido 'no', sigue esperando. requiere_clave = admitido 'si' pero passwordHash null, debe crear clave. ya_activo = ya creó clave, el token no sirve más, debe loguearse con email + clave.
+                    example: requiere_clave
+                  email:
+                    type: string
+                    format: email
+                    nullable: true
+                    description: 'Email del usuario (solo si estado = requiere_clave, para precargar el campo)'
+                    example: juan@mail.com
+                  nombre:
+                    type: string
+                    nullable: true
+                    description: Nombre del usuario para mostrar saludo
+                    example: Juan
+              examples:
+                pendiente:
+                  summary: Registro pendiente de aprobación
+                  value:
+                    estado: pendiente_aprobacion
+                    email: null
+                    nombre: Juan
+                requiere_clave:
+                  summary: 'Aprobado, debe crear clave'
+                  value:
+                    estado: requiere_clave
+                    email: juan@mail.com
+                    nombre: Juan
+                ya_activo:
+                  summary: 'Ya tiene clave, debe loguearse'
+                  value:
+                    estado: ya_activo
+                    email: juan@mail.com
+                    nombre: null
+        '404':
+          description: Token no encontrado o inválido
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: REGISTRO_TOKEN_INVALIDO
+                  message:
+                    type: string
+                    example: 'El token de seguimiento no es válido o ya fue utilizado. Si ya creaste tu clave, iniciá sesión con email y contraseña.'
+                  details:
+                    type: object
+                    nullable: true
+                    example: null
+  /perfil:
+    get:
+      tags:
+        - Perfil
+      summary: Obtener mi perfil
+      description: Pantalla 61. Mi perfil
+      responses:
+        '200':
+          description: Datos del perfil
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsuarioDetalle'
+        '401':
+          description: No autenticado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: AUTH_NO_AUTENTICADO
+                  message:
+                    type: string
+                    example: No estás autenticado. Iniciá sesión para acceder a tu perfil.
+                  details:
+                    type: object
+                    nullable: true
+                    example: null
+  /medios-pago:
+    get:
+      tags:
+        - Medios de Pago
+      summary: Listar mis medios de pago
+      description: Pantalla 65. Medios de pago
+      responses:
+        '200':
+          description: Lista de medios de pago
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MedioPago'
+  /medios-pago/cuenta-nacional:
+    post:
+      tags:
+        - Medios de Pago
+      summary: Agregar cuenta bancaria nacional
+      description: Pantalla 66. Agregar cta. nac.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrearCuentaNacionalRequest'
+      responses:
+        '201':
+          description: 'Cuenta agregada, pendiente verificación'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MedioPago'
+        '400':
+          description: CBU inválido u otros datos incorrectos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: PAGO_CBU_INVALIDO
+                  message:
+                    type: string
+                    example: El CBU ingresado no es válido. Verificá que tenga 22 dígitos y que sea correcto.
+                  details:
+                    type: object
+                    nullable: true
+                    example:
+                      campo: cbu
+                      longitudEsperada: 22
+  /medios-pago/cuenta-exterior:
+    post:
+      tags:
+        - Medios de Pago
+      summary: Agregar cuenta bancaria exterior
+      description: Pantalla 67. Agregar cta. ext.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrearCuentaExteriorRequest'
+      responses:
+        '201':
+          description: Cuenta exterior agregada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MedioPago'
+        '400':
+          description: Datos inválidos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: PAGO_CUENTA_EXTERIOR_INVALIDA
+                  message:
+                    type: string
+                    example: Los datos de la cuenta exterior son inválidos. Verificá el código SWIFT y el IBAN.
+                  details:
+                    type: object
+                    nullable: true
+                    example:
+                      camposInvalidos:
+                        - swift
+                        - iban
+  /medios-pago/tarjeta:
+    post:
+      tags:
+        - Medios de Pago
+      summary: Agregar tarjeta de crédito
+      description: Pantalla 66b. Agregar tarjeta de crédito (nacional o internacional)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrearTarjetaRequest'
+      responses:
+        '201':
+          description: Tarjeta agregada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MedioPago'
+        '400':
+          description: Número de tarjeta inválido
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: PAGO_TARJETA_INVALIDA
+                  message:
+                    type: string
+                    example: El número de tarjeta ingresado no es válido o la tarjeta está vencida.
+                  details:
+                    type: object
+                    nullable: true
+                    example:
+                      campo: numero
+  /medios-pago/cheque:
+    post:
+      tags:
+        - Medios de Pago
+      summary: Agregar cheque certificado
+      description: Pantalla 70. Agregar cheque → debe ser verificado ANTES del inicio de la subasta
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrearChequeRequest'
+      responses:
+        '201':
+          description: 'Cheque registrado, pendiente verificación'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MedioPago'
+        '400':
+          description: Datos inválidos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: PAGO_CHEQUE_INVALIDO
+                  message:
+                    type: string
+                    example: 'Los datos del cheque son inválidos. Verificá el número, el monto y la fecha de emisión.'
+                  details:
+                    type: object
+                    nullable: true
+                    example:
+                      camposInvalidos:
+                        - monto
+                        - fechaEmision
+  '/medios-pago/{id}':
+    get:
+      tags:
+        - Medios de Pago
+      summary: Ver detalle de un medio de pago
+      description: Pantalla 71. Detalle medio pago
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Detalle del medio de pago
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MedioPago'
+        '404':
+          description: Medio de pago no encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: PAGO_NO_ENCONTRADO
+                  message:
+                    type: string
+                    example: El medio de pago solicitado no existe o fue eliminado.
+                  details:
+                    type: object
+                    nullable: true
+                    example: null
+    delete:
+      tags:
+        - Medios de Pago
+      summary: Eliminar un medio de pago
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Medio de pago eliminado
+        '400':
+          description: No se puede eliminar (es el único medio de pago o está en uso)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: PAGO_NO_ELIMINABLE
+                  message:
+                    type: string
+                    example: No podés eliminar este medio de pago porque es el único que tenés registrado. Debés tener al menos uno activo.
+                  details:
+                    type: object
+                    nullable: true
+                    example:
+                      razon: unico_medio_pago
+        '404':
+          description: No encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: PAGO_NO_ENCONTRADO
+                  message:
+                    type: string
+                    example: El medio de pago que intentás eliminar no existe.
+                  details:
+                    type: object
+                    nullable: true
+                    example: null
+  /subastas:
+    get:
+      tags:
+        - Subastas
+      summary: Listar subastas
+      description: Pantallas 16. Home (sección subastas) y 25. Listado subastas. Accesible sin login pero sin precios base.
+      security:
+        - bearerAuth: []
+        - {}
+      parameters:
+        - name: estado
+          in: query
+          schema:
+            type: string
+            enum:
+              - en_vivo
+              - programada
+              - finalizada
+        - name: categoria
+          in: query
+          schema:
+            $ref: '#/components/schemas/CategoriaUsuario'
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Lista de subastas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SubastaResumen'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+  '/subastas/{id}':
+    get:
+      tags:
+        - Subastas
+      summary: Ver detalle de subasta
+      description: Pantalla 27. Detalle subasta
+      security:
+        - bearerAuth: []
+        - {}
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Detalle de la subasta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubastaDetalle'
+        '404':
+          description: Subasta no encontrada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: SUBASTA_NO_ENCONTRADA
+                  message:
+                    type: string
+                    example: La subasta solicitada no existe o fue eliminada.
+                  details:
+                    type: object
+                    nullable: true
+                    example: null
+  '/subastas/{id}/catalogo':
+    get:
+      tags:
+        - Subastas
+      summary: Ver catálogo de piezas de una subasta
+      description: 'Pantalla 28. Catálogo piezas → público, pero precioBase = null si no está logueado'
+      security:
+        - bearerAuth: []
+        - {}
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Lista de piezas del catálogo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PiezaResumen'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+        '404':
+          description: Subasta no encontrada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: SUBASTA_NO_ENCONTRADA
+                  message:
+                    type: string
+                    example: La subasta solicitada no existe. Verificá el listado de subastas disponibles.
+                  details:
+                    type: object
+                    nullable: true
+                    example: null
+  '/piezas/{id}':
+    get:
+      tags:
+        - Subastas
+      summary: Ver detalle de una pieza
+      description: Pantalla 21. Detalle pieza + Pantalla 22. Galería fullscreen (imágenes en el response)
+      security:
+        - bearerAuth: []
+        - {}
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Detalle de la pieza con imágenes, datos del artista y subasta asignada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PiezaDetalle'
+        '404':
+          description: Pieza no encontrada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: PIEZA_NO_ENCONTRADA
+                  message:
+                    type: string
+                    example: La pieza solicitada no existe en el catálogo.
+                  details:
+                    type: object
+                    nullable: true
+                    example: null
+  '/subastas/{id}/sala':
+    get:
+      tags:
+        - Sala en Vivo
+      summary: Ingresar a la sala en vivo
+      description: |
+        Pantalla 29. Pre-ingreso → 30. Sala en vivo.
+        Requiere: usuario registrado + categoría >= categoría subasta + medio de pago verificado.
+        El usuario no puede estar conectado a más de una subasta a la vez.
+        Retorna estado actual de la pieza en subasta y URL de streaming.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Datos de la sala en vivo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SalaEnVivo'
+        '403':
+          description: |
+            No puede acceder. Posibles razones:
+            - Categoría insuficiente
+            - Sin medio de pago verificado
+            - Ya conectado a otra subasta
+            - Multa pendiente
+            - Bloqueado judicialmente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: SALA_CATEGORIA_INSUFICIENTE
+                  message:
+                    type: string
+                    example: Tu categoría actual (común) no te permite acceder a esta subasta. Mejorá tu categoría para participar.
+                  details:
+                    type: object
+                    nullable: true
+                    example:
+                      categoriaUsuario: comun
+                      categoriaRequerida: especial
+              examples:
+                categoria_insuficiente:
+                  summary: Categoría del usuario menor a la requerida
+                  value:
+                    code: SALA_CATEGORIA_INSUFICIENTE
+                    message: Tu categoría actual (común) no te permite acceder a esta subasta. Mejorá tu categoría para participar.
+                    details:
+                      categoriaUsuario: comun
+                      categoriaRequerida: especial
+                sin_medio_pago:
+                  summary: Sin medio de pago verificado
+                  value:
+                    code: SALA_SIN_MEDIO_PAGO
+                    message: Necesitás tener al menos un medio de pago verificado para entrar a la subasta.
+                    details:
+                      mediosPagoVerificados: 0
+                ya_conectado:
+                  summary: Ya conectado a otra subasta
+                  value:
+                    code: SALA_YA_CONECTADO
+                    message: Ya estás conectado a otra subasta en vivo. Salí de la actual antes de entrar a otra.
+                    details:
+                      subastaActualTitulo: 'Joyas Antiguas #12'
+                multa_pendiente:
+                  summary: Tiene multa sin pagar
+                  value:
+                    code: SALA_MULTA_PENDIENTE
+                    message: Tenés una multa pendiente de pago. Aboná la multa para poder participar.
+                    details:
+                      montoMulta: 5000
+        '404':
+          description: Subasta no encontrada o no está en vivo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: SALA_NO_DISPONIBLE
+                  message:
+                    type: string
+                    example: La subasta no existe o no está en vivo en este momento.
+                  details:
+                    type: object
+                    nullable: true
+                    example: null
+  '/subastas/{id}/pujas':
+    post:
+      tags:
+        - Sala en Vivo
+      summary: Realizar una puja
+      description: |
+        Pantalla 32. Confirmar puja → 33. Esperando confirmación → 34. Puja registrada.
+        Validaciones:
+        - monto >= mejorOferta + 1% del valorBase (pujaMinima)
+        - monto <= mejorOferta + 20% del valorBase (pujaMaxima) — NO aplica en categorías oro y platino
+        - Si tiene cheque como garantía, las compras totales no pueden superar el monto del cheque
+        - La app no permite otro puje hasta recibir confirmación del sistema
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrearPujaRequest'
+      responses:
+        '201':
+          description: Puja registrada exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PujaResponse'
+        '400':
+          description: |
+            Puja inválida. Posibles errores:
+            - Monto menor al mínimo permitido
+            - Monto mayor al máximo permitido
+            - Fondos insuficientes (cheque certificado)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: PUJA_MONTO_INSUFICIENTE
+                  message:
+                    type: string
+                    example: El monto de tu puja es menor al mínimo. Debés ofertar al menos US$ 52.750 (última oferta + 1% del valor base).
+                  details:
+                    type: object
+                    nullable: true
+                    example:
+                      montoOfertado: 52000
+                      montoMinimo: 52750
+              examples:
+                monto_bajo:
+                  summary: Monto menor al mínimo
+                  value:
+                    code: PUJA_MONTO_INSUFICIENTE
+                    message: El monto de tu puja es menor al mínimo. Debés ofertar al menos US$ 52.750 (última oferta + 1% del valor base).
+                    details:
+                      montoOfertado: 52000
+                      montoMinimo: 52750
+                      mejorOfertaActual: 52300
+                      valorBase: 45000
+                monto_excedido:
+                  summary: Monto mayor al máximo
+                  value:
+                    code: PUJA_MONTO_EXCEDIDO
+                    message: El monto supera el máximo permitido de US$ 61.300 (última oferta + 20% del valor base). No aplica en subastas oro y platino.
+                    details:
+                      montoOfertado: 65000
+                      montoMaximo: 61300
+                fondos_cheque:
+                  summary: Fondos del cheque insuficientes
+                  value:
+                    code: PUJA_FONDOS_CHEQUE_INSUFICIENTES
+                    message: Tus compras superan el monto de tu cheque certificado. No podés seguir pujando con esta garantía.
+                    details:
+                      montoCheque: 50000
+                      montoComprometido: 48500
+  '/subastas/{id}/sala/salir':
+    post:
+      tags:
+        - Sala en Vivo
+      summary: Salir de la sala en vivo
+      description: Desconecta al usuario de la sala para poder entrar a otra subasta
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Desconectado de la sala
+  /compras:
+    get:
+      tags:
+        - Compra
+      summary: Listar mis compras
+      description: Pantalla 80. Historial compras
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Lista de compras
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CompraDetalle'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+  '/compras/{id}':
+    get:
+      tags:
+        - Compra
+      summary: Ver detalle / factura de compra
+      description: Pantallas 39. Factura compra + 81. Det. compra/factura
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Detalle de la compra con factura
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompraDetalle'
+        '404':
+          description: Compra no encontrada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: COMPRA_NO_ENCONTRADA
+                  message:
+                    type: string
+                    example: La compra solicitada no existe o no pertenece a tu cuenta.
+                  details:
+                    type: object
+                    nullable: true
+                    example: null
+  '/compras/{id}/pagar':
+    post:
+      tags:
+        - Compra
+      summary: Seleccionar medio de pago y método de entrega
+      description: |
+        Pantallas 38. Sel. medio pago → 40. Envío o retiro → 41. Compra exitosa.
+        Si elige retiro personal, se advierte que pierde cobertura de seguro.
+        Si no tiene fondos → genera multa (Pantalla INSUF).
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SeleccionarPagoRequest'
+      responses:
+        '200':
+          description: Pago procesado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompraDetalle'
+        '402':
+          description: |
+            Fondos insuficientes → Se genera multa del 10%.
+            Pantalla INSUF. Fondos insuficientes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: COMPRA_FONDOS_INSUFICIENTES
+                  message:
+                    type: string
+                    example: Fondos insuficientes. Se generó una multa del 10% (US$ 5.230). Tenés 72hs para presentar los fondos.
+                  details:
+                    type: object
+                    nullable: true
+                    example:
+                      montoOfertado: 52300
+                      montoMulta: 5230
+                      fechaLimite: '2026-04-24T15:30:00Z'
+                  multa:
+                    $ref: '#/components/schemas/Multa'
+        '404':
+          description: Compra no encontrada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: COMPRA_NO_ENCONTRADA
+                  message:
+                    type: string
+                    example: La compra solicitada no existe.
+                  details:
+                    type: object
+                    nullable: true
+                    example: null
+  /multas:
+    get:
+      tags:
+        - Multas
+      summary: Ver multas activas
+      description: Pantalla 84. Multa activa
+      responses:
+        '200':
+          description: Lista de multas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Multa'
+  '/multas/{id}/pagar':
+    post:
+      tags:
+        - Multas
+      summary: Pagar una multa
+      description: Pantalla 86. Pagar multa → 87. Confirmación pago multa
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PagarMultaRequest'
+      responses:
+        '200':
+          description: Multa pagada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Multa'
+        '402':
+          description: No se pudo procesar el pago
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: MULTA_PAGO_FALLIDO
+                  message:
+                    type: string
+                    example: No se pudo procesar el pago de la multa. Probá con otro medio de pago.
+                  details:
+                    type: object
+                    nullable: true
+                    example:
+                      razon: fondos_insuficientes
+        '404':
+          description: Multa no encontrada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: MULTA_NO_ENCONTRADA
+                  message:
+                    type: string
+                    example: La multa solicitada no existe.
+                  details:
+                    type: object
+                    nullable: true
+                    example: null
+        '410':
+          description: |
+            Plazo de 72hs vencido → Derivado a justicia. Pantalla 88. Bloqueado judicial. El usuario queda sin acceso a la app.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: MULTA_PLAZO_VENCIDO
+                  message:
+                    type: string
+                    example: El plazo de 72 horas venció. Tu caso fue derivado a la justicia y tu cuenta fue bloqueada permanentemente.
+                  details:
+                    type: object
+                    nullable: true
+                    example:
+                      fechaLimite: '2026-04-24T15:30:00Z'
+                      estado: derivada_justicia
+  /solicitudes-venta:
+    get:
+      tags:
+        - Vender
+      summary: Listar mis solicitudes de venta
+      description: Pantalla 42. Mis solicitudes
+      parameters:
+        - name: estado
+          in: query
+          schema:
+            type: string
+            enum:
+              - borrador
+              - enviada
+              - en_revision
+              - aceptada
+              - rechazada
+              - en_subasta
+              - vendida
+              - no_vendida
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Lista de solicitudes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SolicitudVenta'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+    post:
+      tags:
+        - Vender
+      summary: Crear solicitud de venta
+      description: |
+        Pantallas 43-47. Pasos 1-5:
+        1. Tipo de bien
+        2. Descripción
+        3. Fotos (mínimo 6)
+        4. Historia (si es obra de arte)
+        5. Declaración de propiedad
+
+        El usuario declara que el bien le pertenece y no tiene impedimentos.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrearSolicitudVentaRequest'
+      responses:
+        '201':
+          description: Solicitud creada → Pantalla 48. Confirmación envío → 49. Pendiente revisión
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SolicitudVenta'
+        '400':
+          description: 'Datos inválidos (faltan fotos, declaración no aceptada, etc.)'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: VENTA_FOTOS_INSUFICIENTES
+                  message:
+                    type: string
+                    example: Debés subir al menos 6 fotos del bien a subastar.
+                  details:
+                    type: object
+                    nullable: true
+                    example:
+                      fotosEnviadas: 3
+                      fotosRequeridas: 6
+              examples:
+                fotos_insuficientes:
+                  summary: Faltan fotos
+                  value:
+                    code: VENTA_FOTOS_INSUFICIENTES
+                    message: Debés subir al menos 6 fotos del bien a subastar.
+                    details:
+                      fotosEnviadas: 3
+                      fotosRequeridas: 6
+                declaracion_faltante:
+                  summary: No aceptó declaración
+                  value:
+                    code: VENTA_DECLARACION_FALTANTE
+                    message: Debés declarar que el bien te pertenece y no posee impedimentos para ser subastado.
+                    details:
+                      campo: declaracionPropiedad
+  '/solicitudes-venta/{id}':
+    get:
+      tags:
+        - Vender
+      summary: Ver detalle de solicitud
+      description: |
+        Según el estado muestra distinta info:
+        - en_revision → Pantalla 49
+        - aceptada → Pantalla 50 (valor base, comisiones, subasta asignada)
+        - rechazada → Pantalla 52 (motivo rechazo, devolución con cargo)
+        - en_subasta → Pantalla 54 (ubicación depósito, póliza seguro)
+        - vendida → Pantalla 58
+        - no_vendida → Pantalla 59 (la empresa compra por valor base)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Detalle de la solicitud según su estado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SolicitudVenta'
+        '404':
+          description: Solicitud no encontrada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: SOLICITUD_NO_ENCONTRADA
+                  message:
+                    type: string
+                    example: La solicitud de venta no existe o no pertenece a tu cuenta.
+                  details:
+                    type: object
+                    nullable: true
+                    example: null
+  '/solicitudes-venta/{id}/aceptar-condiciones':
+    post:
+      tags:
+        - Vender
+      summary: Aceptar o rechazar condiciones de venta
+      description: |
+        Pantalla 51. Aceptar condiciones.
+        El usuario acepta o rechaza el valor base y comisiones propuestas por la empresa.
+        Si rechaza → devolución del bien con cargo (Pantalla 53).
+        Debe declarar la cuenta donde recibirá el dinero antes del inicio de la subasta.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AceptarCondicionesVentaRequest'
+      responses:
+        '200':
+          description: Condiciones procesadas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SolicitudVenta'
+        '400':
+          description: No aceptó valor base o comisiones (se inicia devolución)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: VENTA_CONDICIONES_RECHAZADAS
+                  message:
+                    type: string
+                    example: No aceptaste el valor base o las comisiones. Se procederá a la devolución del bien con cargo.
+                  details:
+                    type: object
+                    nullable: true
+                    example:
+                      valorBase: 45000
+                      comisiones: 4500
+                      gastoDevolucion: 2500
+  '/solicitudes-venta/{id}/poliza':
+    get:
+      tags:
+        - Vender
+      summary: Ver póliza de seguro del bien
+      description: Pantalla 56. Póliza seguro → contratada por la empresa sobre el valor base
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Datos de la póliza
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolizaSeguro'
+        '404':
+          description: No tiene póliza asignada aún
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: POLIZA_NO_ENCONTRADA
+                  message:
+                    type: string
+                    example: Tu bien aún no tiene póliza de seguro. Se genera cuando es aceptado y asignado a una subasta.
+                  details:
+                    type: object
+                    nullable: true
+                    example: null
+  '/solicitudes-venta/{id}/contactar-aseguradora':
+    get:
+      tags:
+        - Vender
+      summary: Obtener datos de contacto de la aseguradora
+      description: Pantalla 57. Contactar aseguradora → muestra nombre, teléfono, email, web y número de póliza para que el usuario pueda contactarla y aumentar el valor de la póliza pagando la diferencia
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Datos de contacto de la aseguradora
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactoAseguradora'
+        '404':
+          description: No tiene póliza asignada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: POLIZA_NO_ENCONTRADA
+                  message:
+                    type: string
+                    example: No se puede contactar a la aseguradora porque el bien no tiene póliza asignada.
+                  details:
+                    type: object
+                    nullable: true
+                    example: null
+  /notificaciones:
+    get:
+      tags:
+        - Notificaciones
+      summary: Listar notificaciones
+      description: Pantalla 17. Notificaciones
+      parameters:
+        - name: leida
+          in: query
+          schema:
+            type: boolean
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Lista de notificaciones
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Notificacion'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+                  noLeidas:
+                    type: integer
+  '/notificaciones/{id}':
+    get:
+      tags:
+        - Notificaciones
+      summary: Ver detalle de notificación
+      description: Pantalla 18. Detalle notificación → marca como leída al abrir
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Detalle de la notificación
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notificacion'
+        '404':
+          description: Notificación no encontrada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: NOTIFICACION_NO_ENCONTRADA
+                  message:
+                    type: string
+                    example: La notificación solicitada no existe o ya fue eliminada.
+                  details:
+                    type: object
+                    nullable: true
+                    example: null
+  '/notificaciones/{id}/mensajes':
+    get:
+      tags:
+        - Notificaciones
+      summary: Listar mensajes de una notificación
+      description: Pantalla 18. Detalle notificación → Muestra el hilo de mensajes privados entre SubaSubastaPlus y el usuario asociados a esta notificación. Los mensajes se ordenan cronológicamente.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Lista de mensajes del hilo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Mensaje'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+              example:
+                data:
+                  - id: msg-001
+                    notificacionId: notif-047
+                    contenido: 'Tu puja de US$ 50.900 en la pieza #047 fue superada. Nueva mejor oferta: US$ 52.300.'
+                    emisor: sistema
+                    fecha: '2026-04-21T15:30:00Z'
+                  - id: msg-002
+                    notificacionId: notif-047
+                    contenido: Muchas Gracias!
+                    emisor: usuario
+                    fecha: '2026-04-21T15:32:00Z'
+                meta:
+                  page: 1
+                  limit: 20
+                  total: 2
+                  totalPages: 1
+        '404':
+          description: Notificación no encontrada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: NOTIFICACION_NO_ENCONTRADA
+                  message:
+                    type: string
+                    example: La notificación solicitada no existe o ya fue eliminada.
+                  details:
+                    type: object
+                    nullable: true
+                    example: null
+    post:
+      tags:
+        - Notificaciones
+      summary: Enviar mensaje en un hilo de notificación
+      description: Pantalla 18. El usuario responde a una notificación enviando un mensaje privado a SubastaPlus dentro del hilo de esa notificación.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnviarMensajeRequest'
+      responses:
+        '201':
+          description: Mensaje enviado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mensaje'
+        '400':
+          description: Mensaje vacío o inválido
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: MENSAJE_CONTENIDO_VACIO
+                  message:
+                    type: string
+                    example: El mensaje no puede estar vacío.
+                  details:
+                    type: object
+                    nullable: true
+                    example: null
+        '404':
+          description: Notificación no encontrada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: NOTIFICACION_NO_ENCONTRADA
+                  message:
+                    type: string
+                    example: La notificación solicitada no existe o ya fue eliminada.
+                  details:
+                    type: object
+                    nullable: true
+                    example: null
+  /historial/participaciones:
+    get:
+      tags:
+        - Historial
+      summary: Historial de participaciones en subastas
+      description: Pantalla 74. Hist. participaciones
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Lista de participaciones
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Participacion'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+  '/historial/participaciones/{id}':
+    get:
+      tags:
+        - Historial
+      summary: Detalle de una participación
+      description: Pantalla 75. Det. participación
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Detalle de participación
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Participacion'
+  '/historial/participaciones/{id}/pujas':
+    get:
+      tags:
+        - Historial
+      summary: Historial de pujas en una participación
+      description: 'Pantalla 76. Historial pujas → todas las pujas del usuario en esa subasta, en orden'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Lista de pujas ordenadas cronológicamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HistorialPuja'
+  /historial/ventas:
+    get:
+      tags:
+        - Historial
+      summary: Historial de ventas (bienes que vendí)
+      description: Pantalla 82. Hist. ventas
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Lista de ventas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SolicitudVenta'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+  /historial/metricas:
+    get:
+      tags:
+        - Historial
+      summary: Métricas generales del usuario
+      description: |
+        Pantalla 77. Métricas generales:
+        - Cantidad de subastas asistidas
+        - Veces que ganó
+        - Importes pagados y ofertados
+        - Participaciones por categoría
+        - Porcentaje de victorias
+      responses:
+        '200':
+          description: Métricas del usuario
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Metricas'

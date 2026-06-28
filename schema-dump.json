@@ -1,0 +1,1660 @@
+{
+  "generated_at": "2026-05-12T12:43:48.805Z",
+  "tables": {
+    "productos": {
+      "columns": {
+        "identificador": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Primary Key.<pk/>",
+          "default": null
+        },
+        "fecha": {
+          "type": "string",
+          "format": "date",
+          "max_length": null,
+          "description": null,
+          "default": null
+        },
+        "disponible": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 2,
+          "description": null,
+          "default": null
+        },
+        "descripcion_catalogo": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 500,
+          "description": null,
+          "default": "No Posee"
+        },
+        "descripcion_completa": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 300,
+          "description": null,
+          "default": null
+        },
+        "revisor": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Foreign Key to `empleados.identificador`.<fk table='empleados' column='identificador'/>",
+          "default": null
+        },
+        "duenio": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Foreign Key to `duenios.identificador`.<fk table='duenios' column='identificador'/>",
+          "default": null
+        },
+        "seguro": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 30,
+          "description": null,
+          "default": null
+        }
+      },
+      "required": [
+        "identificador",
+        "descripcion_completa",
+        "revisor",
+        "duenio"
+      ]
+    },
+    "fotos_solicitud_venta": {
+      "columns": {
+        "identificador": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Primary Key.<pk/>",
+          "default": null
+        },
+        "solicitud": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Foreign Key to `solicitudes_venta.identificador`.<fk table='solicitudes_venta' column='identificador'/>",
+          "default": null
+        },
+        "foto": {
+          "type": "string",
+          "format": "bytea",
+          "max_length": null,
+          "description": null,
+          "default": null
+        }
+      },
+      "required": [
+        "identificador",
+        "solicitud",
+        "foto"
+      ]
+    },
+    "subastas": {
+      "columns": {
+        "identificador": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Primary Key.<pk/>",
+          "default": null
+        },
+        "fecha": {
+          "type": "string",
+          "format": "date",
+          "max_length": null,
+          "description": null,
+          "default": null
+        },
+        "hora": {
+          "type": "string",
+          "format": "time without time zone",
+          "max_length": null,
+          "description": null,
+          "default": null
+        },
+        "estado": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 10,
+          "description": null,
+          "default": null
+        },
+        "subastador": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Foreign Key to `subastadores.identificador`.<fk table='subastadores' column='identificador'/>",
+          "default": null
+        },
+        "ubicacion": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 350,
+          "description": null,
+          "default": null
+        },
+        "capacidad_asistentes": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": null,
+          "default": null
+        },
+        "tiene_deposito": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 2,
+          "description": null,
+          "default": null
+        },
+        "seguridad_propia": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 2,
+          "description": null,
+          "default": null
+        },
+        "categoria": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 10,
+          "description": null,
+          "default": null
+        }
+      },
+      "required": [
+        "identificador",
+        "hora"
+      ]
+    },
+    "pujos": {
+      "columns": {
+        "identificador": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Primary Key.<pk/>",
+          "default": null
+        },
+        "asistente": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Foreign Key to `asistentes.identificador`.<fk table='asistentes' column='identificador'/>",
+          "default": null
+        },
+        "item": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Foreign Key to `items_catalogo.identificador`.<fk table='items_catalogo' column='identificador'/>",
+          "default": null
+        },
+        "importe": {
+          "type": "number",
+          "format": "numeric",
+          "max_length": null,
+          "description": null,
+          "default": null
+        },
+        "ganador": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 2,
+          "description": null,
+          "default": "no"
+        }
+      },
+      "required": [
+        "identificador",
+        "asistente",
+        "item",
+        "importe"
+      ]
+    },
+    "catalogos": {
+      "columns": {
+        "identificador": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Primary Key.<pk/>",
+          "default": null
+        },
+        "descripcion": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 250,
+          "description": null,
+          "default": null
+        },
+        "subasta": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Foreign Key to `subastas.identificador`.<fk table='subastas' column='identificador'/>",
+          "default": null
+        },
+        "responsable": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Foreign Key to `empleados.identificador`.<fk table='empleados' column='identificador'/>",
+          "default": null
+        }
+      },
+      "required": [
+        "identificador",
+        "descripcion",
+        "responsable"
+      ]
+    },
+    "productos_extension": {
+      "columns": {
+        "producto": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Primary Key.<pk/>\nThis is a Foreign Key to `productos.identificador`.<fk table='productos' column='identificador'/>",
+          "default": null
+        },
+        "es_obra_de_arte": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 2,
+          "description": null,
+          "default": "no"
+        },
+        "cantidad_elementos": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": null,
+          "default": 1
+        }
+      },
+      "required": [
+        "producto",
+        "es_obra_de_arte",
+        "cantidad_elementos"
+      ]
+    },
+    "seguros": {
+      "columns": {
+        "nro_poliza": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 30,
+          "description": "Note:\nThis is a Primary Key.<pk/>",
+          "default": null
+        },
+        "compania": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 150,
+          "description": null,
+          "default": null
+        },
+        "poliza_combinada": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 2,
+          "description": null,
+          "default": null
+        },
+        "importe": {
+          "type": "number",
+          "format": "numeric",
+          "max_length": null,
+          "description": null,
+          "default": null
+        }
+      },
+      "required": [
+        "nro_poliza",
+        "compania",
+        "importe"
+      ]
+    },
+    "asistentes_extension": {
+      "columns": {
+        "asistente": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Primary Key.<pk/>\nThis is a Foreign Key to `asistentes.identificador`.<fk table='asistentes' column='identificador'/>",
+          "default": null
+        },
+        "estado_conexion": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 15,
+          "description": null,
+          "default": "desconectado"
+        }
+      },
+      "required": [
+        "asistente",
+        "estado_conexion"
+      ]
+    },
+    "medios_pago": {
+      "columns": {
+        "identificador": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Primary Key.<pk/>",
+          "default": null
+        },
+        "cliente": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Foreign Key to `clientes.identificador`.<fk table='clientes' column='identificador'/>",
+          "default": null
+        },
+        "tipo": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 20,
+          "description": null,
+          "default": null
+        },
+        "alias": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 100,
+          "description": null,
+          "default": null
+        },
+        "verificado": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 2,
+          "description": null,
+          "default": "no"
+        },
+        "moneda": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 3,
+          "description": null,
+          "default": null
+        },
+        "ultimos_digitos": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 4,
+          "description": null,
+          "default": null
+        },
+        "titular": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 150,
+          "description": null,
+          "default": null
+        },
+        "banco": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 150,
+          "description": null,
+          "default": null
+        },
+        "cbu": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 22,
+          "description": null,
+          "default": null
+        },
+        "cuit_cuil": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 15,
+          "description": null,
+          "default": null
+        },
+        "tipo_cuenta": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 20,
+          "description": null,
+          "default": null
+        },
+        "swift": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 11,
+          "description": null,
+          "default": null
+        },
+        "iban": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 34,
+          "description": null,
+          "default": null
+        },
+        "pais": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 100,
+          "description": null,
+          "default": null
+        },
+        "numero_cheque": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 50,
+          "description": null,
+          "default": null
+        },
+        "monto_cheque": {
+          "type": "number",
+          "format": "numeric",
+          "max_length": null,
+          "description": null,
+          "default": null
+        },
+        "fecha_emision": {
+          "type": "string",
+          "format": "date",
+          "max_length": null,
+          "description": null,
+          "default": null
+        }
+      },
+      "required": [
+        "identificador",
+        "cliente",
+        "tipo",
+        "verificado"
+      ]
+    },
+    "duenios": {
+      "columns": {
+        "identificador": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Primary Key.<pk/>\nThis is a Foreign Key to `personas.identificador`.<fk table='personas' column='identificador'/>",
+          "default": null
+        },
+        "numero_pais": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": null,
+          "default": null
+        },
+        "verificacion_financiera": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 2,
+          "description": null,
+          "default": null
+        },
+        "verificacion_judicial": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 2,
+          "description": null,
+          "default": null
+        },
+        "calificacion_riesgo": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": null,
+          "default": null
+        },
+        "verificador": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Foreign Key to `empleados.identificador`.<fk table='empleados' column='identificador'/>",
+          "default": null
+        }
+      },
+      "required": [
+        "identificador",
+        "verificador"
+      ]
+    },
+    "subastas_extension": {
+      "columns": {
+        "subasta": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Primary Key.<pk/>\nThis is a Foreign Key to `subastas.identificador`.<fk table='subastas' column='identificador'/>",
+          "default": null
+        },
+        "moneda": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 3,
+          "description": null,
+          "default": null
+        },
+        "es_coleccion": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 2,
+          "description": null,
+          "default": "no"
+        },
+        "nombre_coleccion": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 250,
+          "description": null,
+          "default": null
+        }
+      },
+      "required": [
+        "subasta",
+        "moneda",
+        "es_coleccion"
+      ]
+    },
+    "registro_de_subasta": {
+      "columns": {
+        "identificador": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Primary Key.<pk/>",
+          "default": null
+        },
+        "subasta": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Foreign Key to `subastas.identificador`.<fk table='subastas' column='identificador'/>",
+          "default": null
+        },
+        "duenio": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Foreign Key to `duenios.identificador`.<fk table='duenios' column='identificador'/>",
+          "default": null
+        },
+        "producto": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Foreign Key to `productos.identificador`.<fk table='productos' column='identificador'/>",
+          "default": null
+        },
+        "cliente": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Foreign Key to `clientes.identificador`.<fk table='clientes' column='identificador'/>",
+          "default": null
+        },
+        "importe": {
+          "type": "number",
+          "format": "numeric",
+          "max_length": null,
+          "description": null,
+          "default": null
+        },
+        "comision": {
+          "type": "number",
+          "format": "numeric",
+          "max_length": null,
+          "description": null,
+          "default": null
+        }
+      },
+      "required": [
+        "identificador",
+        "subasta",
+        "duenio",
+        "producto",
+        "cliente",
+        "importe",
+        "comision"
+      ]
+    },
+    "seguros_extension": {
+      "columns": {
+        "nro_poliza": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 30,
+          "description": "Note:\nThis is a Primary Key.<pk/>\nThis is a Foreign Key to `seguros.nro_poliza`.<fk table='seguros' column='nro_poliza'/>",
+          "default": null
+        },
+        "telefono": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 50,
+          "description": null,
+          "default": null
+        },
+        "email": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 150,
+          "description": null,
+          "default": null
+        },
+        "web": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 250,
+          "description": null,
+          "default": null
+        }
+      },
+      "required": [
+        "nro_poliza"
+      ]
+    },
+    "items_catalogo_estado": {
+      "columns": {
+        "item": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Primary Key.<pk/>\nThis is a Foreign Key to `items_catalogo.identificador`.<fk table='items_catalogo' column='identificador'/>",
+          "default": null
+        },
+        "estado": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 15,
+          "description": null,
+          "default": "pendiente"
+        },
+        "mejor_oferta": {
+          "type": "number",
+          "format": "numeric",
+          "max_length": null,
+          "description": null,
+          "default": null
+        }
+      },
+      "required": [
+        "item",
+        "estado"
+      ]
+    },
+    "fotos": {
+      "columns": {
+        "identificador": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Primary Key.<pk/>",
+          "default": null
+        },
+        "producto": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Foreign Key to `productos.identificador`.<fk table='productos' column='identificador'/>",
+          "default": null
+        },
+        "foto": {
+          "type": "string",
+          "format": "bytea",
+          "max_length": null,
+          "description": null,
+          "default": null
+        }
+      },
+      "required": [
+        "identificador",
+        "producto",
+        "foto"
+      ]
+    },
+    "items_catalogo": {
+      "columns": {
+        "identificador": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Primary Key.<pk/>",
+          "default": null
+        },
+        "catalogo": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Foreign Key to `catalogos.identificador`.<fk table='catalogos' column='identificador'/>",
+          "default": null
+        },
+        "producto": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Foreign Key to `productos.identificador`.<fk table='productos' column='identificador'/>",
+          "default": null
+        },
+        "precio_base": {
+          "type": "number",
+          "format": "numeric",
+          "max_length": null,
+          "description": null,
+          "default": null
+        },
+        "comision": {
+          "type": "number",
+          "format": "numeric",
+          "max_length": null,
+          "description": null,
+          "default": null
+        },
+        "subastado": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 2,
+          "description": null,
+          "default": null
+        }
+      },
+      "required": [
+        "identificador",
+        "catalogo",
+        "producto",
+        "precio_base",
+        "comision"
+      ]
+    },
+    "registro_subasta_extension": {
+      "columns": {
+        "registro": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Primary Key.<pk/>\nThis is a Foreign Key to `registro_de_subasta.identificador`.<fk table='registro_de_subasta' column='identificador'/>",
+          "default": null
+        },
+        "metodo_entrega": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 20,
+          "description": null,
+          "default": null
+        },
+        "direccion_envio": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 350,
+          "description": null,
+          "default": null
+        },
+        "costo_envio": {
+          "type": "number",
+          "format": "numeric",
+          "max_length": null,
+          "description": null,
+          "default": null
+        },
+        "estado_pago": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 25,
+          "description": null,
+          "default": "pendiente_pago"
+        }
+      },
+      "required": [
+        "registro",
+        "estado_pago"
+      ]
+    },
+    "solicitudes_venta": {
+      "columns": {
+        "identificador": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Primary Key.<pk/>",
+          "default": null
+        },
+        "cliente": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Foreign Key to `clientes.identificador`.<fk table='clientes' column='identificador'/>",
+          "default": null
+        },
+        "duenio": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Foreign Key to `duenios.identificador`.<fk table='duenios' column='identificador'/>",
+          "default": null
+        },
+        "producto": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Foreign Key to `productos.identificador`.<fk table='productos' column='identificador'/>",
+          "default": null
+        },
+        "tipo": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 15,
+          "description": null,
+          "default": null
+        },
+        "descripcion": {
+          "type": "string",
+          "format": "text",
+          "max_length": null,
+          "description": null,
+          "default": null
+        },
+        "historia": {
+          "type": "string",
+          "format": "text",
+          "max_length": null,
+          "description": null,
+          "default": null
+        },
+        "declaracion_propiedad": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 2,
+          "description": null,
+          "default": "no"
+        },
+        "estado": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 15,
+          "description": null,
+          "default": "enviada"
+        },
+        "motivo_rechazo": {
+          "type": "string",
+          "format": "text",
+          "max_length": null,
+          "description": null,
+          "default": null
+        },
+        "valor_base": {
+          "type": "number",
+          "format": "numeric",
+          "max_length": null,
+          "description": null,
+          "default": null
+        },
+        "comisiones": {
+          "type": "number",
+          "format": "numeric",
+          "max_length": null,
+          "description": null,
+          "default": null
+        },
+        "subasta_asignada": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Foreign Key to `subastas.identificador`.<fk table='subastas' column='identificador'/>",
+          "default": null
+        },
+        "direccion_envio": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 350,
+          "description": null,
+          "default": null
+        },
+        "ubicacion_deposito": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 350,
+          "description": null,
+          "default": null
+        },
+        "seguro": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 30,
+          "description": "Note:\nThis is a Foreign Key to `seguros.nro_poliza`.<fk table='seguros' column='nro_poliza'/>",
+          "default": null
+        },
+        "cuenta_cobro_tipo": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 10,
+          "description": null,
+          "default": null
+        },
+        "cuenta_cobro_cbu": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 22,
+          "description": null,
+          "default": null
+        },
+        "cuenta_cobro_swift": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 11,
+          "description": null,
+          "default": null
+        },
+        "cuenta_cobro_iban": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 34,
+          "description": null,
+          "default": null
+        },
+        "cuenta_cobro_pais": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 100,
+          "description": null,
+          "default": null
+        },
+        "cuenta_cobro_moneda": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 3,
+          "description": null,
+          "default": null
+        },
+        "fecha_creacion": {
+          "type": "string",
+          "format": "timestamp without time zone",
+          "max_length": null,
+          "description": null,
+          "default": "now()"
+        }
+      },
+      "required": [
+        "identificador",
+        "cliente",
+        "tipo",
+        "descripcion",
+        "declaracion_propiedad",
+        "estado",
+        "fecha_creacion"
+      ]
+    },
+    "mensajes": {
+      "columns": {
+        "identificador": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Primary Key.<pk/>",
+          "default": null
+        },
+        "notificacion": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Foreign Key to `notificaciones.identificador`.<fk table='notificaciones' column='identificador'/>",
+          "default": null
+        },
+        "contenido": {
+          "type": "string",
+          "format": "text",
+          "max_length": null,
+          "description": null,
+          "default": null
+        },
+        "emisor": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 10,
+          "description": null,
+          "default": null
+        },
+        "fecha": {
+          "type": "string",
+          "format": "timestamp without time zone",
+          "max_length": null,
+          "description": null,
+          "default": "now()"
+        }
+      },
+      "required": [
+        "identificador",
+        "notificacion",
+        "contenido",
+        "emisor",
+        "fecha"
+      ]
+    },
+    "pujos_extension": {
+      "columns": {
+        "pujo": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Primary Key.<pk/>\nThis is a Foreign Key to `pujos.identificador`.<fk table='pujos' column='identificador'/>",
+          "default": null
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "timestamp without time zone",
+          "max_length": null,
+          "description": null,
+          "default": "now()"
+        }
+      },
+      "required": [
+        "pujo",
+        "timestamp"
+      ]
+    },
+    "artistas_piezas": {
+      "columns": {
+        "identificador": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Primary Key.<pk/>",
+          "default": null
+        },
+        "producto": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Foreign Key to `productos.identificador`.<fk table='productos' column='identificador'/>",
+          "default": null
+        },
+        "nombre_artista": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 250,
+          "description": null,
+          "default": null
+        },
+        "fecha_obra": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 50,
+          "description": null,
+          "default": null
+        },
+        "historia": {
+          "type": "string",
+          "format": "text",
+          "max_length": null,
+          "description": null,
+          "default": null
+        }
+      },
+      "required": [
+        "identificador",
+        "producto",
+        "nombre_artista"
+      ]
+    },
+    "clientes": {
+      "columns": {
+        "identificador": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Primary Key.<pk/>\nThis is a Foreign Key to `personas.identificador`.<fk table='personas' column='identificador'/>",
+          "default": null
+        },
+        "numero_pais": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Foreign Key to `paises.numero`.<fk table='paises' column='numero'/>",
+          "default": null
+        },
+        "admitido": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 2,
+          "description": null,
+          "default": null
+        },
+        "categoria": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 10,
+          "description": null,
+          "default": null
+        },
+        "verificador": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Foreign Key to `empleados.identificador`.<fk table='empleados' column='identificador'/>",
+          "default": null
+        }
+      },
+      "required": [
+        "identificador",
+        "verificador"
+      ]
+    },
+    "notificaciones": {
+      "columns": {
+        "identificador": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Primary Key.<pk/>",
+          "default": null
+        },
+        "cliente": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Foreign Key to `clientes.identificador`.<fk table='clientes' column='identificador'/>",
+          "default": null
+        },
+        "titulo": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 150,
+          "description": null,
+          "default": null
+        },
+        "mensaje": {
+          "type": "string",
+          "format": "text",
+          "max_length": null,
+          "description": null,
+          "default": null
+        },
+        "tipo": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 25,
+          "description": null,
+          "default": null
+        },
+        "leida": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 2,
+          "description": null,
+          "default": "no"
+        },
+        "fecha": {
+          "type": "string",
+          "format": "timestamp without time zone",
+          "max_length": null,
+          "description": null,
+          "default": "now()"
+        },
+        "accion_url": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 500,
+          "description": null,
+          "default": null
+        },
+        "tiene_mensajes": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 2,
+          "description": null,
+          "default": "no"
+        }
+      },
+      "required": [
+        "identificador",
+        "cliente",
+        "titulo",
+        "mensaje",
+        "tipo",
+        "leida",
+        "fecha",
+        "tiene_mensajes"
+      ]
+    },
+    "sectores": {
+      "columns": {
+        "identificador": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Primary Key.<pk/>",
+          "default": null
+        },
+        "nombre_sector": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 150,
+          "description": null,
+          "default": null
+        },
+        "codigo_sector": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 10,
+          "description": null,
+          "default": null
+        },
+        "responsable_sector": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Foreign Key to `empleados.identificador`.<fk table='empleados' column='identificador'/>",
+          "default": null
+        }
+      },
+      "required": [
+        "identificador",
+        "nombre_sector"
+      ]
+    },
+    "fotos_documento": {
+      "columns": {
+        "identificador": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Primary Key.<pk/>",
+          "default": null
+        },
+        "cliente": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Foreign Key to `clientes.identificador`.<fk table='clientes' column='identificador'/>",
+          "default": null
+        },
+        "foto_frente": {
+          "type": "string",
+          "format": "bytea",
+          "max_length": null,
+          "description": null,
+          "default": null
+        },
+        "foto_dorso": {
+          "type": "string",
+          "format": "bytea",
+          "max_length": null,
+          "description": null,
+          "default": null
+        }
+      },
+      "required": [
+        "identificador",
+        "cliente",
+        "foto_frente",
+        "foto_dorso"
+      ]
+    },
+    "clientes_acceso": {
+      "columns": {
+        "identificador": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Primary Key.<pk/>",
+          "default": null
+        },
+        "cliente": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Foreign Key to `clientes.identificador`.<fk table='clientes' column='identificador'/>",
+          "default": null
+        },
+        "email": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 150,
+          "description": null,
+          "default": null
+        },
+        "password_hash": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 255,
+          "description": null,
+          "default": null
+        },
+        "token_seguimiento_hash": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 255,
+          "description": null,
+          "default": null
+        },
+        "refresh_token": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 512,
+          "description": null,
+          "default": null
+        },
+        "foto_perfil": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 500,
+          "description": null,
+          "default": null
+        },
+        "fecha_registro": {
+          "type": "string",
+          "format": "timestamp without time zone",
+          "max_length": null,
+          "description": null,
+          "default": "now()"
+        },
+        "codigo_recuperacion": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 6,
+          "description": null,
+          "default": null
+        },
+        "codigo_expiracion": {
+          "type": "string",
+          "format": "timestamp without time zone",
+          "max_length": null,
+          "description": null,
+          "default": null
+        }
+      },
+      "required": [
+        "identificador",
+        "cliente",
+        "email",
+        "fecha_registro"
+      ]
+    },
+    "personas": {
+      "columns": {
+        "identificador": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Primary Key.<pk/>",
+          "default": null
+        },
+        "documento": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 20,
+          "description": null,
+          "default": null
+        },
+        "nombre": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 150,
+          "description": null,
+          "default": null
+        },
+        "direccion": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 250,
+          "description": null,
+          "default": null
+        },
+        "estado": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 15,
+          "description": null,
+          "default": null
+        },
+        "foto": {
+          "type": "string",
+          "format": "bytea",
+          "max_length": null,
+          "description": null,
+          "default": null
+        }
+      },
+      "required": [
+        "identificador",
+        "documento",
+        "nombre"
+      ]
+    },
+    "multas": {
+      "columns": {
+        "identificador": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Primary Key.<pk/>",
+          "default": null
+        },
+        "registro": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Foreign Key to `registro_de_subasta.identificador`.<fk table='registro_de_subasta' column='identificador'/>",
+          "default": null
+        },
+        "monto_original": {
+          "type": "number",
+          "format": "numeric",
+          "max_length": null,
+          "description": null,
+          "default": null
+        },
+        "monto_multa": {
+          "type": "number",
+          "format": "numeric",
+          "max_length": null,
+          "description": null,
+          "default": null
+        },
+        "moneda": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 3,
+          "description": null,
+          "default": null
+        },
+        "estado": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 20,
+          "description": null,
+          "default": "pendiente"
+        },
+        "fecha_limite": {
+          "type": "string",
+          "format": "timestamp without time zone",
+          "max_length": null,
+          "description": null,
+          "default": null
+        },
+        "fecha_creacion": {
+          "type": "string",
+          "format": "timestamp without time zone",
+          "max_length": null,
+          "description": null,
+          "default": "now()"
+        },
+        "medio_pago_cobro": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Foreign Key to `medios_pago.identificador`.<fk table='medios_pago' column='identificador'/>",
+          "default": null
+        }
+      },
+      "required": [
+        "identificador",
+        "registro",
+        "monto_original",
+        "monto_multa",
+        "moneda",
+        "estado",
+        "fecha_limite",
+        "fecha_creacion"
+      ]
+    },
+    "asistentes": {
+      "columns": {
+        "identificador": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Primary Key.<pk/>",
+          "default": null
+        },
+        "numero_postor": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": null,
+          "default": null
+        },
+        "cliente": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Foreign Key to `clientes.identificador`.<fk table='clientes' column='identificador'/>",
+          "default": null
+        },
+        "subasta": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Foreign Key to `subastas.identificador`.<fk table='subastas' column='identificador'/>",
+          "default": null
+        }
+      },
+      "required": [
+        "identificador",
+        "numero_postor",
+        "cliente",
+        "subasta"
+      ]
+    },
+    "empleados": {
+      "columns": {
+        "identificador": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Primary Key.<pk/>",
+          "default": null
+        },
+        "cargo": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 100,
+          "description": null,
+          "default": null
+        },
+        "sector": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": null,
+          "default": null
+        }
+      },
+      "required": [
+        "identificador"
+      ]
+    },
+    "subastadores": {
+      "columns": {
+        "identificador": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Primary Key.<pk/>\nThis is a Foreign Key to `personas.identificador`.<fk table='personas' column='identificador'/>",
+          "default": null
+        },
+        "matricula": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 15,
+          "description": null,
+          "default": null
+        },
+        "region": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 50,
+          "description": null,
+          "default": null
+        }
+      },
+      "required": [
+        "identificador"
+      ]
+    },
+    "paises": {
+      "columns": {
+        "numero": {
+          "type": "integer",
+          "format": "integer",
+          "max_length": null,
+          "description": "Note:\nThis is a Primary Key.<pk/>",
+          "default": null
+        },
+        "nombre": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 250,
+          "description": null,
+          "default": null
+        },
+        "nombre_corto": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 250,
+          "description": null,
+          "default": null
+        },
+        "capital": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 250,
+          "description": null,
+          "default": null
+        },
+        "nacionalidad": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 250,
+          "description": null,
+          "default": null
+        },
+        "idiomas": {
+          "type": "string",
+          "format": "character varying",
+          "max_length": 150,
+          "description": null,
+          "default": null
+        }
+      },
+      "required": [
+        "numero",
+        "nombre",
+        "capital",
+        "nacionalidad",
+        "idiomas"
+      ]
+    }
+  }
+}
