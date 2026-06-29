@@ -17,7 +17,7 @@ const { evaluarYActualizarCategoria } = require("../lib/categoria-upgrade");
 
 async function verificarVencimientoCompra(row, ext) {
   if (
-    ext?.estado_pago !== "fondos_insuficientes" ||
+    !["fondos_insuficientes", "pendiente_pago"].includes(ext?.estado_pago) ||
     !ext?.fecha_limite_pago ||
     new Date(ext.fecha_limite_pago) >= new Date()
   ) {
