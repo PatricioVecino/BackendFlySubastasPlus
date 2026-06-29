@@ -27,7 +27,7 @@ async function verificarVencimientoCompra(row, ext) {
     .from("multas")
     .select("*")
     .eq("registro", row.identificador)
-    .eq("estado", "pendiente")
+    .neq("estado", "derivada_justicia")
     .maybeSingle();
   if (multa) {
     await Multas.update(multa.identificador, { estado: "derivada_justicia" });
